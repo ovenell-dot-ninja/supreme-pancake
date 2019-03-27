@@ -10,7 +10,7 @@ echo "    Ansible  Bootstrap    "
 echo ""
 
 echo "Installing Prerequisites"
-sudo yum install -y git ansible
+#sudo yum install -y git ansible
 sudo apt install -y git ansible
 
 echo "Cloning kazoo-ansible Repository"
