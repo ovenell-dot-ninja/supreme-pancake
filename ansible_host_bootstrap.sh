@@ -11,6 +11,7 @@ echo ""
 
 echo "Installing Prerequisites"
 sudo yum install -y git ansible
+sudo apt install -y git ansible
 
 echo "Cloning kazoo-ansible Repository"
 git clone https://github.com/kazoo-ansible/kazoo-ansible ~/kazoo-ansible
