@@ -14,7 +14,7 @@ Complete these steps on the Ansible Host that will run supreme-pancake.
    ```
 2. Bootstrap the Ansible host
    ```bash
-   $ bash <(curl -s https://raw.githubusercontent.com/kazoo-ansible/kazoo-ansible/master/ansible_host_bootstrap.sh)
+   $ bash <(curl -s https://raw.githubusercontent.com/ovenell-dot-ninja/supreme-pancake/master/ansible_host_bootstrap.sh)
    ```
 3. Edit /etc/ansible/hosts (Hint: Press i for insert mode and Escape for command mode)
    ```bash
