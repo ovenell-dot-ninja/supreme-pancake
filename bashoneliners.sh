@@ -179,5 +179,58 @@ mapfile -d $'\0' arr < <(find /path/to -print0)
 # Dump all AWS IAM users/roles to a Terraform file for editing / reusing in another environment
 echo iamg iamgm iamgp iamip iamp iampa iamr iamrp iamu iamup | AWS_PROFILE=myprofile xargs -n1  terraforming
 
-# 
+# How to expand a CIDR notation to its IPs
+for j in $(seq 0 255); do for i in $(seq 0 255) ; do seq -f "10.$j.$i.%g" 0 255; done; done
 
+# Run command multiple times with a for loop and a sequence expression
+for i in {1..10}; do date; sleep 1; done
+
+# Convert m4a files to mp3 using faad and lame
+faad -o tmp.wav music.m4a && lame -b 192 tmp.wav music.mp3
+
+# Run a never-ending process in the background in a way that you can check on its status anytime
+screen -d -m -S some_name ping my_router
+
+# Replace symlinks with the actual files they are pointing at
+find /path/to/dir -type l -exec sh -c 'cp --remove-destination "$(readlink "{}")" "{}"' \; 
+
+# expire a users password immediately
+chage -d 0 USERNAME
+
+# sort du (folders by size) output into a human-readable format
+for i in G M K; do du -hsx * | grep "[0-9]$i\b" | sort -nr; done 2>/dev/null
+
+# Convert from avi format to mp4 encoding
+ffmpeg -i file.avi file.mp4
+
+# colorful bash propt
+PS1='\[\e[1;31m\][\u@\h \W]\$\[\e[0m\] '
+
+# Export a git project to a directory
+git archive master | tar x -C /path/to/dir/to/export
+
+# Calculate the total disk space used by a list of files or directories
+du -s file1 dir1 | awk '{sum += $1} END {print sum}'
+
+# Copy a directory with a large number of files to another server
+tar cp -C /path/to/dir . | ssh server2 'tar x -C /path/to/target'
+
+# Use rsync instead of cp to get a progress indicator when copying large files
+rsync --progress largefile.gz somewhere/else/
+
+# Alert me by email when a disconnected or unreachable server comes back online
+while ! ping -c1 the_host_down; do sleep 1; done && date | mail -s 'the host is back!' me@example.com
+
+# Find the most recently modified files in a directory and all subdirectories
+find /path/to/dir -type f | perl -ne 'chomp(@files = <>); my $p = 9; foreach my $f (sort { (stat($a))[$p] <=> (stat($b))[$p] } @files) { print scalar localtime((stat($f))[$p]), "\t", $f, "\n" }' | tail
+
+# Schedule a one-time task using "at" command and intuitive date specifications
+at now + 30 minutes
+
+# Aliases the ls command to display the way I like it
+alias ls='ls -lhGpt --color=always'
+
+# Get the available space on a partition as a single numeric value
+df /path/to/dir | sed -ne 2p | awk '{print $4}'
+
+#
