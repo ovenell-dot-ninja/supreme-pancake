@@ -1,5 +1,5 @@
 ---
-- hosts: 10.0.0.144
+- hosts: acidburn.squanch.this
   remote_user: ansible
   become: no
   become_method:
