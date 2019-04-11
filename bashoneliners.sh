@@ -233,4 +233,8 @@ alias ls='ls -lhGpt --color=always'
 # Get the available space on a partition as a single numeric value
 df /path/to/dir | sed -ne 2p | awk '{print $4}'
 
-#
+# While loop to pretty print system load (1, 5 & 15 minutes)
+while :; do date; awk '{printf "1 minute load: %.2f\n", $1; printf "5 minute load: %.2f\n", $2; printf "15 minute load: %.2f\n", $3}' /proc/loadavg; sleep 3; done
+
+# Grab latest Azure txt code
+cat /var/spool/gammu/inbox/$(ls -Art /var/spool/gammu/inbox/ | tail -n 1) | perl -ne 'print map("$_\n", m/\w+/g);' | tr 0-9 | sort | uniq | awk 'length($1) == 6 {print}'
