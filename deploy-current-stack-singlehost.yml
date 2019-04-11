@@ -315,22 +315,6 @@
         - /zfspool/media/docker/.confluence/data:/var/atlassian/application-data/confluence
         - /zfspool/media/docker/.confluence/config:/var/lib/confluence
       restart_policy: unless-stopped
-  - name: Create Chrome proxy docker container
-    docker_container:
-      name: chrometater
-      image: local/chrome:0.0.1
-      state: started
-      env:
-        VNC_SERVER_PASSWORD: "66GMC1000"
-      exposed_ports:
-        - 5900
-      ports:
-        "5900:5900"
-      user:
-        "apps"
-      privileged:
-        "yes"
-      restart_policy: unless-stopped
   - name: Create Gitlab container
     docker_container:
       name: gitlab
