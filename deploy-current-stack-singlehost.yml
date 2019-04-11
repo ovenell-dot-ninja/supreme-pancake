@@ -1,0 +1,383 @@
+---
+- hosts: 10.0.0.144
+  remote_user: ansible
+  become: no
+  become_method:
+  tasks:
+  - name: Create Sonarr docker container
+    docker_container:
+      name: sonarr
+      image: linuxserver/sonarr:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 8989
+      ports:
+        "8989:8989"
+      volumes:
+        - /zfspool/media/docker/.sonarr:/config
+        - /zfspool/media/tv:/tv
+        - /zfspool/media/downloads:/downloads
+      restart_policy: unless-stopped
+  - name: Create Radarr docker container
+    docker_container:
+      name: radarr
+      image: linuxserver/radarr:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 7878
+      ports:
+        "7878:7878"
+      volumes:
+        - /zfspool/media/docker/.radarr:/config
+        - /zfspool/media/Movies:/movies
+        - /zfspool/media/downloads:/downloads
+      restart_policy: unless-stopped
+  - name: Create Heimdall docker container
+    docker_container:
+      name: heimdall
+      image: linuxserver/heimdall:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 80
+        - 443
+      ports:
+        80:80,443:443
+      volumes:
+        - /zfspool/media/docker/.heimdall:/config
+      restart_policy: unless-stopped
+  - name: Create PlexRequests docker container
+    docker_container:
+      name: plexrequests
+      image: linuxserver/plexrequests:latest
+      state: started
+      env:
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 3001
+      ports:
+        "3001:3000"
+      volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /zfspool/media/docker/.plexrequests:/config
+      restart_policy: unless-stopped
+  - name: Create sabnzbd docker container
+    docker_container:
+      name: sabnzbd
+      image: linuxserver/sabnzbd:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 8080
+        - 9090
+      ports:
+        8080:8080,9090:9090
+      volumes:
+        - /zfspool/media/docker/.sabnzbd:/config
+        - /zfspool/media/downloads:/downloads
+        - /zfspool/media/downloads:/incomplete-downloads
+        - /zfspool/media/docker/.sabnzbd/sabnzbdplus-default:/etc/default
+      restart_policy: unless-stopped
+  - name: Create Transmission docker container
+    docker_container:
+      name: torrent-vpn
+      image: haugene/transmission-openvpn:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+        OPENVPN_PROVIDER: "PIA"
+        OPENVPN_CONFIG: "Netherlands"
+        OPENVPN_USERNAME: "p7378495"
+        OPENVPN_PASSWORD: "fbWCCFkfUE"
+        LOCAL_NETWORK: "10.0.0.0/16"
+      log_driver: "json-file"
+      log_opt: "max-size=10m"
+      capabilities:
+      - NET_ADMIN
+      devices:
+      - /dev/net/tun
+      exposed_ports:
+      - 9091
+      ports:
+        9091:9091
+      volumes:
+      - /mnt/media:/data
+      restart_policy: unless-stopped
+  - name: Create Jackett docker container
+    docker_container:
+      name: jackett
+      image: linuxserver/jackett:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 9117
+      ports:
+        "9117:9117"
+      volumes:
+        - /zfspool/media/docker/.jackett/config:/config
+        - /zfspool/media/downloads:/downloads
+      restart_policy: unless-stopped
+  - name: Create Plex docker container
+    docker_container:
+      name: plex
+      image: plexinc/pms-docker:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+        ADVERTISE_IP: "http://10.0.0.53:32400"
+        CHANGE_CONFIG_DIR_OWNERSHIP: "true"
+      hostname: sleepygary
+      exposed_ports:
+        - 32400
+        - 3005
+        - 8324
+        - 32469
+        - 1900
+        - 32410
+        - 32412
+        - 32413
+        - 32414
+      ports:
+        "32400:32400,3005:3005,8324:8324,32469:32469,1900:1900,32410:32410,32412:32412,32413:32413,32414:32414"
+      volumes:
+        - /zfspool/media/docker/.plex:/config
+        - /tmp/plex:/transcode
+        - /mnt/media:/data
+      restart_policy: unless-stopped
+  - name: Create PlexPy docker container
+    docker_container:
+      name: plexpy
+      image: linuxserver/tautulli:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 8181
+      ports:
+        "8181:8181"
+      volumes:
+        - /zfspool/media/docker/.plexpy:/config
+        - "/zfspool/media/docker/.plex/Library/Application Support/Plex Media Server/Logs:/logs"
+      restart_policy: unless-stopped
+  - name: Create Grav docker container
+    docker_container:
+      name: grav
+      image: garywiz/docker-grav:latest
+      state: started
+      env:
+        CONFIG_EXT_SSL_HOSTNAME: "ops.ianovenell.com"
+      exposed_ports:
+        - 8080
+      ports:
+        "8080:8080"
+      volumes:
+        - /zfspool/media/docker/.ansible/docker-grav-storage:/apps/var
+      restart_policy: unless-stopped
+  - name: Create zabbix docker container
+    docker_container:
+      name: zabbix
+      image: zabbix/zabbix-appliance:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 80
+        - 10051
+      ports:
+        80:80,10051:10051
+      volumes:
+        - /zfspool/media/docker/.zabbix:/var/lib/zabbix
+      restart_policy: unless-stopped
+  - name: Create Grafana-XXL docker storage container
+    docker_container:
+      name: grafana-xxl-storage
+      image: busybox:latest
+      state: started
+      volumes:
+      - /var/lib/grafana
+      restart_policy: unless-stopped
+  - name: Create InfluxDB docker storage container
+    docker_container:
+      name: influxdb-storage
+      image: busybox:latest
+      state: started
+      volumes:
+      - /var/lib/influxdb
+      restart_policy: unless-stopped
+  - name: Create Grafana-XXL docker container
+    docker_container:
+      name: grafana-xxl
+      image: monitoringartist/grafana-xxl:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 3000
+      ports:
+        "3000:3000"
+      volumes_from:
+      - grafana-xxl-storage
+      restart_policy: unless-stopped
+  - name: Create InfluxDB docker container
+    docker_container:
+      name: influxdb
+      image: influxdb:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 8086
+      ports:
+        "8086:8086"
+      volumes_from:
+      - influxdb-storage
+      restart_policy: unless-stopped
+  - name: Create Traefik docker container
+    docker_container:
+      name: traefik
+      image: traefik:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+        CLOUDFLARE_EMAIL: "ian.ovenell@gmail.com"
+        CLOUDFLARE_API_KEY: "24aa448065e45a15aee9c461b8ebf51934ab9"
+      exposed_ports:
+        - 80
+        - 443
+        - 8080
+      ports:
+        "80:80,443:443,8080:8080"
+      volumes:
+        - /zfspool/media/docker/.traefik:/etc/traefik
+        - /zfspool/media/docker/.traefik/.shared:/shared
+      restart_policy: unless-stopped
+  - name: Create Tor SOCKS5 proxy container
+    docker_container:
+      name: torproxy
+      image: jess/tor-proxy:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 9050
+      ports:
+        "9050:9050"
+      restart_policy: unless-stopped
+  - name: Create Privoxy container
+    docker_container:
+      name: privoxy
+      image: jess/privoxy:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 8118
+      ports:
+        "8118:8118"
+      links:
+        "torproxy:torproxy"
+      restart_policy: unless-stopped
+  - name: Create Guac container
+    docker_container:
+      name: guacamole
+      image: oznu/guacamole:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 8008
+      ports:
+        "8008:8080"
+      volumes:
+        - /zfspool/media/docker/.guac:/config
+      restart_policy: unless-stopped
+  - name: Create Confluence container
+    docker_container:
+      name: confluence
+      image: atlassian/confluence-server:latest
+      state: started
+      env:
+        TZ: "America/Vancouver"
+        CATALINA_OPTS: "-Xms256m -Xmx1g"
+      exposed_ports:
+        - 8090
+        - 8091
+      ports:
+        "8090:8090,8091:8091"
+      volumes:
+        - /zfspool/media/docker/.confluence/data:/var/atlassian/application-data/confluence
+        - /zfspool/media/docker/.confluence/config:/var/lib/confluence
+      restart_policy: unless-stopped
+  - name: Create Chrome proxy docker container
+    docker_container:
+      name: chrometater
+      image: local/chrome:0.0.1
+      state: started
+      env:
+        VNC_SERVER_PASSWORD: "66GMC1000"
+      exposed_ports:
+        - 5900
+      ports:
+        "5900:5900"
+      user:
+        "apps"
+      privileged:
+        "yes"
+      restart_policy: unless-stopped
+  - name: Create Gitlab container
+    docker_container:
+      name: gitlab
+      image: gitlab/gitlab-ce:latest
+      state: started
+      env:
+        GITLAB_OMNIBUS_CONFIG: "external_url 'http://gitlab.ianovenell.com:30080'; gitlab_rails['gitlab_shell_ssh_port']=30022"
+        PGID: "1000"
+        PUID: "1000"
+      exposed_ports:
+        - 30080
+        - 30022
+      ports:
+        "30080:30080,30222:22"
+      volumes:
+        - /zfspool/media/docker/.gitlab/config:/etc/gitlab
+        - /zfspool/media/docker/.gitlab/logs:/var/log/gitlab
+        - /zfspool/media/docker/.gitlab/data:/var/opt/gitlab
+      restart_policy: unless-stopped

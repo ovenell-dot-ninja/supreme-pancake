@@ -44,7 +44,7 @@ $RANDOM = Get-Random -Maximum 999999 -Minimum 111111
 $RESOURCE_GROUP_NAME = "terraformstate"
 $STORAGE_ACCOUNT_NAME = "tfstate$RANDOM"
 $CONTAINER_NAME = "tfstate"
-$LOCATION = "westeurope"
+$LOCATION = "westus"
  
 # Create resource group
 New-AzResourceGroup -Name "$RESOURCE_GROUP_NAME" -Location $LOCATION
@@ -60,3 +60,9 @@ $ACCOUNT_KEY = Get-AzStorageAccountKey -ResourceGroupName "$RESOURCE_GROUP_NAME"
  
 # Create blob container
 New-AzStorageContainer -Name "$CONTAINER_NAME" -Context $ctx
+
+# Create Azure KeyVault and store secret
+$AZ_VAULT = New-AzKeyVault -Name "AzKeys$RANDOM" -ResourceGroupName "$RESOURCE_GROUP_NAME" -Location "$LOCATION" -EnabledForDeployment
+
+# Set up data plane permissions for the Contoso Security Team role
+Set-AzKeyVaultAccessPolicy -VaultName "$AZ_VAULT.VaultName" -ObjectId (Get-AzADGroup -SearchString 'Contoso Security Team')[0].Id -PermissionsToKeys backup,create,delete,get,import,list,restore -PermissionsToSecrets get,list,set,delete,backup,restore,recover,purge
