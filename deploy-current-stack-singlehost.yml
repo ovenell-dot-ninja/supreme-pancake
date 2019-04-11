@@ -243,11 +243,11 @@
         CLOUDFLARE_EMAIL: "ian.ovenell@gmail.com"
         CLOUDFLARE_API_KEY: "24aa448065e45a15aee9c461b8ebf51934ab9"
       exposed_ports:
-        - 80
-        - 443
+        - 8083
+        - 4433
         - 8082
       ports:
-        "80:80,443:443,8082:8080"
+        "8083:80,4433:443,8082:8080"
       volumes:
         - /zfspool/media/docker/.traefik:/etc/traefik
         - /zfspool/media/docker/.traefik/.shared:/shared
