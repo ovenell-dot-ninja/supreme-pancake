@@ -83,10 +83,10 @@
         PGID: "1000"
         PUID: "1000"
       exposed_ports:
-        - 8080
+        - 8081
         - 9090
       ports:
-        8080:8080,9090:9090
+        8081:8080,9090:9090
       volumes:
         - /zfspool/media/docker/.sabnzbd:/config
         - /zfspool/media/downloads:/downloads
@@ -182,37 +182,6 @@
       volumes:
         - /zfspool/media/docker/.plexpy:/config
         - "/zfspool/media/docker/.plex/Library/Application Support/Plex Media Server/Logs:/logs"
-      restart_policy: unless-stopped
-  - name: Create Grav docker container
-    docker_container:
-      name: grav
-      image: garywiz/docker-grav:latest
-      state: started
-      env:
-        CONFIG_EXT_SSL_HOSTNAME: "ops.ianovenell.com"
-      exposed_ports:
-        - 8080
-      ports:
-        "8080:8080"
-      volumes:
-        - /zfspool/media/docker/.ansible/docker-grav-storage:/apps/var
-      restart_policy: unless-stopped
-  - name: Create zabbix docker container
-    docker_container:
-      name: zabbix
-      image: zabbix/zabbix-appliance:latest
-      state: started
-      env:
-        TZ: "America/Vancouver"
-        PGID: "1000"
-        PUID: "1000"
-      exposed_ports:
-        - 80
-        - 10051
-      ports:
-        80:80,10051:10051
-      volumes:
-        - /zfspool/media/docker/.zabbix:/var/lib/zabbix
       restart_policy: unless-stopped
   - name: Create Grafana-XXL docker storage container
     docker_container:
